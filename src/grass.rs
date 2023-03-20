@@ -4,8 +4,8 @@ use warbler_grass::prelude::*;
 pub struct GrassPlugin;
 impl Plugin for GrassPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(create_grass)
-            .add_plugin(warbler_grass::editor::EditorPlugin);
+        app.add_system(create_grass);
+        //.add_plugin(warbler_grass::editor::EditorPlugin);
     }
 }
 /// Creates the grass in our game world

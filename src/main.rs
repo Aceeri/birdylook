@@ -4,16 +4,25 @@ mod water;
 // use bevy::diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
 use bevy_flycam::{FlyCam, NoCameraPlayerPlugin};
 use bevy_inspector_egui::quick::{AssetInspectorPlugin, WorldInspectorPlugin};
+use bevy_mod_edge_detection::{EdgeDetectionConfig, EdgeDetectionPlugin};
 
-use bevy::{prelude::*, window::WindowPlugin};
+use bevy::{
+    core_pipeline::{
+        fxaa::{Fxaa, Sensitivity},
+        prepass::{DepthPrepass, NormalPrepass},
+    },
+    prelude::*,
+    window::WindowPlugin,
+};
 use grass::GrassPlugin;
-use warbler_grass::editor::ray_cast::RayCamera;
+//use warbler_grass::editor::ray_cast::RayCamera;
 use water::{
     setup_reflection_cam, update_reflection_cam, update_reflection_texture, WaterMaterial,
 };
 
 fn main() {
     App::new()
+        .insert_resource(Msaa::Off)
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.5)))
         .insert_resource(AmbientLight {
             color: Color::rgb(1., 0.9, 0.9),
@@ -27,6 +36,8 @@ fn main() {
             }),
             ..default()
         }))
+        .add_plugin(EdgeDetectionPlugin)
+        .init_resource::<EdgeDetectionConfig>()
         .add_plugin(NoCameraPlayerPlugin)
         .add_plugin(warbler_grass::warblers_plugin::WarblersPlugin)
         .add_plugin(GrassPlugin)
@@ -51,6 +62,18 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             transform: Transform::from_xyz(0., 3., 0.),
             ..default()
         })
+        .insert((
+        // The edge detection effect requires the depth and normal prepass
+        DepthPrepass,
+        NormalPrepass,
+        // Add some anti-aliasing because the lines can be really harsh otherwise
+        // This isn't required, but some form of AA is recommended
+        Fxaa {
+            enabled: true,
+            edge_threshold: Sensitivity::Extreme,
+            edge_threshold_min: Sensitivity::Extreme,
+        },
+        ))
         // marker component
         .insert(Player)
         // Bundle from the bevy_flycam crate for the camera movement
@@ -58,7 +81,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         // giving it a name makes it easier to identify in the inspector
         .insert(Name::new("Player"))
         // used for the editor in the warbler_grass crate
-        .insert(RayCamera::default());
+        //.insert(RayCamera::default());
+        ;
 
     // spawn the scene
     commands

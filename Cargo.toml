@@ -7,6 +7,8 @@ edition = "2021"
 
 [dependencies]
 bevy = "0.10.0"
+#bevy_mod_edge_detection = "0.1"
+bevy_mod_edge_detection = {path = "../bevy_mod_edge_detection"}
 bevy-inspector-egui = "0.18.0"
 # Switch to the main reposity again as soon as the 0.10 pr gets merged
 bevy_flycam = { git = "https://github.com/NiklasEi/bevy_flycam/", branch = "bevy_main" }
@@ -14,5 +16,5 @@ ron = "0.8.0"
 serde = "1.0.152"
 bytemuck = "1.13.0"
 rand = "0.8.5"
-warbler_grass = {git = "https://github.com/EmiOnGit/warbler_grass", branch = "editor", features = ["editor"]}
+warbler_grass = {git = "https://github.com/EmiOnGit/warbler_grass"}
 image = "0.24.5"
